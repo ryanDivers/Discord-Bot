@@ -2,17 +2,20 @@ import { Message } from "discord.js";
 import { isMessageForBot, getCommand } from "../helpers/inputHelpers";
 import messageEvents from "./commandHandlers";
 import { defaultCommand } from "./commandHandlers/default";
+import { getEventScopedLogger } from "../Logger";
 
 const messageHandlers = (message: Message): void => {
+    const logger = getEventScopedLogger(message);
+
     if (!isMessageForBot(message)) return;
     const command = getCommand(message);
 
     const eventHandler = messageEvents[command];
     if (!eventHandler) {
-        return defaultCommand(message);
+        return defaultCommand(message, logger);
     }
 
-    eventHandler(message);
+    eventHandler(message, logger);
 };
 
 export default messageHandlers;

@@ -1,11 +1,16 @@
 import { createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
+import { join } from 'path';
 
 const playSound = (message: Message): void => {
     const player = createAudioPlayer();
-    const resource = createAudioResource('/Users/ryandivers/Documents/GitHub/Discord-Bot/assets/sound/test.mp3');
+    const resource = createAudioResource(join(__dirname, '../../../../assets/sound/test.mp3'));
 
     player.play(resource);
+
+    player.on('error', (err) => {
+        console.log(err);
+    });
 
     const connection = joinVoiceChannel({
         channelId: message.member?.voice.channelId as any,

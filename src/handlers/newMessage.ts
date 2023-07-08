@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { MESSAGE_PREFIX } from "../config";
-import { createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
+import { AudioPlayerStatus, createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
 
 const isMessageForBot = (message: Message) : boolean => !message.author.bot && message.content.startsWith(MESSAGE_PREFIX);
 const getCommand = (message: Message) : string => {
@@ -31,17 +31,36 @@ const newMessageHandler = (message: Message) : void => {
 };
 
 const playSound = async (message: Message) : Promise<void> => {
-    const connection = await joinVoiceChannel({
-       channelId: message.member?.voice.channelId as any,
-       guildId: message.guildId as any,
-       adapterCreator: message.guild?.voiceAdapterCreator as any, 
-    });
+    console.log(message.member?.voice.channelId);
+    console.log(message.guildId);
+    
 
     const player = createAudioPlayer();
-    const resource = await createAudioResource('./test.mp3');
+
+    player.on(AudioPlayerStatus.Playing, () => {
+        console.log('Player is playing');
+    });
+
+    player.on('error', (err) => {
+        console.log(err);
+    });
+
+    const resource = createAudioResource('/Users/ryandivers/Documents/GitHub/Discord-Bot/assets/sound/test.mp3');
     player.play(resource);
-    connection.subscribe(player);
-   
+
+    const connection = joinVoiceChannel({
+        channelId: message.member?.voice.channelId as any,
+        guildId: message.guildId as any,
+        adapterCreator: message.guild?.voiceAdapterCreator as any, 
+     });
+
+    console.log('Connection to voice channel done');
+    const subscription = connection.subscribe(player);
+
+     if (subscription) {
+        setTimeout(() => subscription.unsubscribe(), 15_000);
+     }
+
     return;
 }
 

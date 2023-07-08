@@ -1,12 +1,17 @@
 import { createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
-import { join } from 'path';
 import { Logger } from "pino";
+import ytdl from "ytdl-core";
+import { getDetails } from "../../helpers/inputHelpers";
 
 const playSound = (message: Message, logger: Logger): void => {
     logger.info({ msg: 'Handling Sound Command'});
     const player = createAudioPlayer();
-    const resource = createAudioResource(join(__dirname, '../../../../assets/sound/test.mp3'));
+
+    const url = getDetails(message);
+    const stream = ytdl(url, { filter: 'audioonly'});
+
+    const resource = createAudioResource(stream);
 
     player.play(resource);
     player.on('error', (err) => {
@@ -30,7 +35,6 @@ const playSound = (message: Message, logger: Logger): void => {
 
     if (subscription) {
         logger.info({ msg: 'Playing Audio'});
-        setTimeout(() => subscription.unsubscribe(), 15_0000);
     }
 }
 

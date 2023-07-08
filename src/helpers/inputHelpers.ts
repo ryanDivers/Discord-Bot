@@ -9,5 +9,11 @@ const getCommand = (message: Message) : string => {
     return command.toLowerCase();
 }
 
-export { isMessageForBot, getCommand };
+const getDetails = (message: Message) : string => {
+    const commandBody = message.content.slice(MESSAGE_PREFIX.length);
+    const details = commandBody.split(' ')[1];
+    return details;
+};
+
+export { isMessageForBot, getCommand, getDetails };
 

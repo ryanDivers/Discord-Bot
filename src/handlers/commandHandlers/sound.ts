@@ -12,10 +12,12 @@ const playSound = (message: Message): void => {
         console.log(err);
     });
 
+    if (!message.member || !message.guild || !message.guildId) return;
+
     const connection = joinVoiceChannel({
-        channelId: message.member?.voice.channelId as any,
-        guildId: message.guildId as any,
-        adapterCreator: message.guild?.voiceAdapterCreator as any,
+        channelId: message.member.voice.channelId || '',
+        guildId: message.guildId,
+        adapterCreator: message.guild.voiceAdapterCreator,
     });
 
     const subscription = connection.subscribe(player);

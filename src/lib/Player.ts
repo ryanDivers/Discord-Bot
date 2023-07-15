@@ -17,9 +17,11 @@ class Player {
     }
 
     play(resource: AudioResource) {
+        console.log(this.isPlaying);
         if (this.isPlaying) {
             logger.info({ msg: 'Adding item to play queue' });
             this.playQueue.push(resource);
+            console.log(this.playQueue);
             return;
         }
         
@@ -27,11 +29,16 @@ class Player {
         this.isPlaying = true;
     }
 
+    returnInstance() {
+        return this.player;
+    }
+
     private recreatePlayer() {
         this.player = createAudioPlayer();
     }
 
-    private idleHandler() {
+    private idleHandler = () => {
+        this.isPlaying = false;
         const resource = this.playQueue.shift();
         if (resource) {
             this.play(resource);
@@ -39,10 +46,10 @@ class Player {
         }
         
         logger.info({ msg: 'Player is idle' });
-        this.isPlaying = false;
+        
     }
 
-    private errorHandler(err: unknown) {
+    private errorHandler = (err: unknown) => {
         logger.error({ msg: 'Player Error', err });
         this.recreatePlayer();
     }

@@ -3,10 +3,12 @@ import { Message } from "discord.js";
 import { Logger } from "pino";
 import ytdl from "ytdl-core";
 import { getDetails } from "../../helpers/inputHelpers";
+import Player from "../../lib/Player";
+
+const player = new Player();
 
 const playSound = (message: Message, logger: Logger): void => {
     logger.info({ msg: 'Handling Sound Command'});
-    const player = createAudioPlayer();
 
     const url = getDetails(message);
     const stream = ytdl(url, { filter: 'audioonly'});
@@ -14,9 +16,6 @@ const playSound = (message: Message, logger: Logger): void => {
     const resource = createAudioResource(stream);
 
     player.play(resource);
-    player.on('error', (err) => {
-        logger.error({ msg: 'Player Error', err });
-    });
 
     if (!message.member || !message.guild || !message.guildId) {
         logger.warn({ msg: 'Message not in useable format'});
@@ -31,7 +30,7 @@ const playSound = (message: Message, logger: Logger): void => {
     });
 
     logger.info({ msg: 'Subscribing player to Voice Channel'})
-    const subscription = connection.subscribe(player);
+    const subscription = connection.subscribe(player.returnInstance());
 
     if (subscription) {
         logger.info({ msg: 'Playing Audio'});

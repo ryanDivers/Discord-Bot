@@ -1,10 +1,17 @@
-import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioPlayer } from "@discordjs/voice";
+import {
+    AudioPlayer,
+    AudioPlayerStatus,
+    createAudioPlayer,
+    createAudioResource,
+} from "@discordjs/voice";
+import ytdl from "ytdl-core";
 import { logger } from "../Logger";
+import { Metadata } from "../../@types/internal";
 
 class Player {
     private isPlaying: boolean = false;
 
-    private playQueue: AudioResource[] = [];
+    private simplePlayQueue: Metadata[] = []
 
     private player: AudioPlayer;
 
@@ -16,17 +23,35 @@ class Player {
         this.player.on(AudioPlayerStatus.Idle, this.idleHandler);
     }
 
-    play(resource: AudioResource) {
-        console.log(this.isPlaying);
-        if (this.isPlaying) {
-            logger.info({ msg: 'Adding item to play queue' });
-            this.playQueue.push(resource);
-            console.log(this.playQueue);
-            return;
+    private play() {
+        const metadata = this.simplePlayQueue.shift();
+        if (metadata) {
+            const stream = ytdl(metadata.url, { filter: 'audioonly' });
+            const resource = createAudioResource(stream);
+            this.player.play(resource);
+            this.isPlaying = true;
         }
-        
-        this.player.play(resource);
-        this.isPlaying = true;
+    }
+
+    async addToQueue(url: string) {
+        const metadata = await ytdl.getInfo(url);
+
+        this.simplePlayQueue.push({
+            url: metadata.videoDetails.video_url,
+            title: metadata.videoDetails.title,
+            duration: metadata.videoDetails.lengthSeconds,
+            author: metadata.videoDetails.author.name,
+        });
+
+        if (!this.isPlaying) {
+            this.play();
+        }
+    }
+
+
+
+    getQueue() {
+        return this.simplePlayQueue
     }
 
     returnInstance() {
@@ -35,18 +60,15 @@ class Player {
 
     private recreatePlayer() {
         this.player = createAudioPlayer();
+        this.play()
     }
 
     private idleHandler = () => {
         this.isPlaying = false;
-        const resource = this.playQueue.shift();
-        if (resource) {
-            this.play(resource);
-            return;
-        }
-        
-        logger.info({ msg: 'Player is idle' });
-        
+        this.play()
+        if (!this.isPlaying) {
+            logger.info({ msg: 'Player is idle' });
+        }   
     }
 
     private errorHandler = (err: unknown) => {
@@ -56,4 +78,6 @@ class Player {
 
 };
 
-export default Player;
+const player = new Player();
+
+export default player;

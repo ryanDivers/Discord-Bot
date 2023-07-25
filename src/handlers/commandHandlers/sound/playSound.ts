@@ -1,21 +1,16 @@
-import { createAudioPlayer, createAudioResource, joinVoiceChannel } from "@discordjs/voice";
+import { createAudioResource, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
 import { Logger } from "pino";
 import ytdl from "ytdl-core";
-import { getDetails } from "../../helpers/inputHelpers";
-import Player from "../../lib/Player";
+import { getDetails } from "../../../helpers/inputHelpers";
+import player from "../../../lib/Player";
 
-const player = new Player();
 
-const playSound = (message: Message, logger: Logger): void => {
+const playSound = async (message: Message, logger: Logger): Promise<void> => {
     logger.info({ msg: 'Handling Sound Command'});
 
     const url = getDetails(message);
-    const stream = ytdl(url, { filter: 'audioonly'});
-
-    const resource = createAudioResource(stream);
-
-    player.play(resource);
+    await player.addToQueue(url);
 
     if (!message.member || !message.guild || !message.guildId) {
         logger.warn({ msg: 'Message not in useable format'});

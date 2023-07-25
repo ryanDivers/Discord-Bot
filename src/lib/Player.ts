@@ -26,6 +26,7 @@ class Player {
     private play() {
         const metadata = this.simplePlayQueue.shift();
         if (metadata) {
+            logger.info({ msg: 'Playing next song in queue' });
             const stream = ytdl(metadata.url, { filter: 'audioonly' });
             const resource = createAudioResource(stream);
             this.player.play(resource);
@@ -34,8 +35,9 @@ class Player {
     }
 
     async addToQueue(url: string) {
-        const metadata = await ytdl.getInfo(url);
+        logger.info({ msg: 'Adding new song to queue' });
 
+        const metadata = await ytdl.getInfo(url);
         this.simplePlayQueue.push({
             url: metadata.videoDetails.video_url,
             title: metadata.videoDetails.title,

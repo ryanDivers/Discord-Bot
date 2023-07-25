@@ -48,14 +48,16 @@ class Player {
         }
     }
 
-
-
     getQueue() {
         return this.simplePlayQueue
     }
 
     returnInstance() {
         return this.player;
+    }
+
+    clearQueue() {
+        this.simplePlayQueue = [];
     }
 
     private recreatePlayer() {

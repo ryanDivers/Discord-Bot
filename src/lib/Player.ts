@@ -15,6 +15,8 @@ class Player {
 
     private player: AudioPlayer;
 
+    private paused: boolean = false;
+
 
     constructor() {
         this.player = createAudioPlayer();
@@ -65,6 +67,18 @@ class Player {
     skipSong() {
         this.player.stop()
         this.play()
+    }
+
+    pause() {
+        this.paused = this.player.pause()
+    }
+
+    unpause() {
+        this.player.unpause()
+    }
+
+    stop() {
+        this.player.stop()
     }
 
     private recreatePlayer() {

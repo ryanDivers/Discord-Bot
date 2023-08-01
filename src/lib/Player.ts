@@ -62,6 +62,11 @@ class Player {
         this.simplePlayQueue = [];
     }
 
+    skipSong() {
+        this.player.stop()
+        this.play()
+    }
+
     private recreatePlayer() {
         this.player = createAudioPlayer();
         this.play()

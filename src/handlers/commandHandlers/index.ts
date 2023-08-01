@@ -1,10 +1,12 @@
 import { Message } from "discord.js";
+import { Logger } from "pino";
 import { helpCommand } from "./help";
 import { pingCommand } from "./ping";
 import { clearQueue } from "./sound/clear";
 import { getQueue } from "./sound/getQueue";
 import { playSound } from "./sound/playSound";
-import { Logger } from "pino";
+import { skipSong } from "./sound/skip";
+
 
 const messageEvents: Record<string, (message: Message, logger: Logger) => void | Promise<void>> = {
     'ping': pingCommand,
@@ -12,6 +14,7 @@ const messageEvents: Record<string, (message: Message, logger: Logger) => void |
     'sound': playSound,
     'queue': getQueue,
     'clear': clearQueue,
+    'skip': skipSong,
 };
 
 export default messageEvents;

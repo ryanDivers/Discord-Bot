@@ -1,7 +1,6 @@
-import { createAudioResource, joinVoiceChannel } from "@discordjs/voice";
+import { joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
 import { Logger } from "pino";
-import ytdl from "ytdl-core";
 import { getDetails } from "../../../helpers/inputHelpers";
 import player from "../../../lib/Player";
 

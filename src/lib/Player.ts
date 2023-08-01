@@ -80,7 +80,7 @@ class Player {
         this.recreatePlayer();
     }
 
-};
+}
 
 const player = new Player();
 

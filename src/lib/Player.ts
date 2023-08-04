@@ -3,20 +3,17 @@ import {
     AudioPlayerStatus,
     createAudioPlayer,
     createAudioResource,
-} from "@discordjs/voice";
-import ytdl from "ytdl-core";
-import { logger } from "../Logger";
-import { Metadata } from "../../@types/internal";
+} from '@discordjs/voice';
+import ytdl from 'ytdl-core';
+import { logger } from '../Logger';
+import { Metadata } from '../../@types/internal';
 
 class Player {
     private isPlaying: boolean = false;
 
-    private simplePlayQueue: Metadata[] = []
+    private playQueue: Metadata[] = [];
 
     private player: AudioPlayer;
-
-    private paused: boolean = false;
-
 
     constructor() {
         this.player = createAudioPlayer();
@@ -26,7 +23,7 @@ class Player {
     }
 
     private play() {
-        const metadata = this.simplePlayQueue.shift();
+        const metadata = this.playQueue.shift();
         if (metadata) {
             logger.info({ msg: 'Playing next song in queue' });
             const stream = ytdl(metadata.url, { filter: 'audioonly' });
@@ -40,7 +37,7 @@ class Player {
         logger.info({ msg: 'Adding new song to queue' });
 
         const metadata = await ytdl.getInfo(url);
-        this.simplePlayQueue.push({
+        this.playQueue.push({
             url: metadata.videoDetails.video_url,
             title: metadata.videoDetails.title,
             duration: metadata.videoDetails.lengthSeconds,
@@ -53,7 +50,7 @@ class Player {
     }
 
     getQueue() {
-        return this.simplePlayQueue
+        return this.playQueue;
     }
 
     returnInstance() {
@@ -61,44 +58,43 @@ class Player {
     }
 
     clearQueue() {
-        this.simplePlayQueue = [];
+        this.playQueue = [];
     }
 
     skipSong() {
-        this.player.stop()
-        this.play()
+        this.player.stop();
+        this.play();
     }
 
     pause() {
-        this.paused = this.player.pause()
+        this.player.pause();
     }
 
     unpause() {
-        this.player.unpause()
+        this.player.unpause();
     }
 
     stop() {
-        this.player.stop()
+        this.player.stop();
     }
 
     private recreatePlayer() {
         this.player = createAudioPlayer();
-        this.play()
+        this.play();
     }
 
     private idleHandler = () => {
         this.isPlaying = false;
-        this.play()
+        this.play();
         if (!this.isPlaying) {
             logger.info({ msg: 'Player is idle' });
-        }   
+        }
     }
 
     private errorHandler = (err: unknown) => {
         logger.error({ msg: 'Player Error', err });
         this.recreatePlayer();
     }
-
 }
 
 const player = new Player();

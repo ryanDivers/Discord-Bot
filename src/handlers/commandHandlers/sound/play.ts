@@ -5,7 +5,7 @@ import { getDetails } from "../../../helpers/inputHelpers";
 import player from "../../../lib/Player";
 
 
-const playSound = async (message: Message, logger: Logger): Promise<void> => {
+const play = async (message: Message, logger: Logger): Promise<void> => {
     logger.info({ msg: 'Handling Sound Command'});
 
     const url = getDetails(message);
@@ -31,4 +31,4 @@ const playSound = async (message: Message, logger: Logger): Promise<void> => {
     }
 }
 
-export { playSound };
+export { play };

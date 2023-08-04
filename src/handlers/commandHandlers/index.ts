@@ -1,19 +1,19 @@
 import { Message } from "discord.js";
 import { Logger } from "pino";
-import { helpCommand } from "./help";
-import { pingCommand } from "./ping";
+import { help } from "./help";
+import { ping } from "./ping";
 import { clearQueue } from "./sound/clear";
 import { getQueue } from "./sound/getQueue";
-import { playSound } from "./sound/playSound";
+import { play } from "./sound/play";
 import { skipSong } from "./sound/skip";
 import { pause, unpause } from "./sound/pause";
 import { stop } from "./sound/stop";
 
 
 const messageEvents: Record<string, (message: Message, logger: Logger) => void | Promise<void>> = {
-    'ping': pingCommand,
-    'help': helpCommand,
-    'sound': playSound,
+    'ping': ping,
+    'help': help,
+    'play': play,
     'queue': getQueue,
     'clear': clearQueue,
     'skip': skipSong,

@@ -1,5 +1,11 @@
-import { Message } from "discord.js"
+import { Message, GuildMember, Guild } from "discord.js"
 import { getDetails } from "./inputHelpers";
+
+interface MessageWithField extends Message {
+    member: GuildMember,
+    guild: Guild,
+    guildId: string
+}
 
 const isUsableMessage = (message: Message): boolean => Boolean(message.member && message.guild && message.guildId);
 
@@ -9,9 +15,8 @@ const isValidUrl = (message: Message): boolean => {
     return youtubeRegex.test(messageDetails);
 }
 
-const isValidPlayMessage = (message: Message): boolean => {
+const isValidPlayMessage = (message: Message): message is MessageWithField => {
     return isUsableMessage(message) && isValidUrl(message)
 }
-
 
 export { isValidPlayMessage }

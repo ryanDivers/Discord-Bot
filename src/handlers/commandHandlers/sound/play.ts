@@ -3,18 +3,21 @@ import { Message } from "discord.js";
 import { Logger } from "pino";
 import { getDetails } from "../../../helpers/inputHelpers";
 import player from "../../../lib/Player";
+import { isValidPlayMessage } from "../../../helpers/validators";
 
 
 const play = async (message: Message, logger: Logger): Promise<void> => {
     logger.info({ msg: 'Handling Sound Command'});
 
-    const url = getDetails(message);
-    await player.addToQueue(url);
 
-    if (!message.member || !message.guild || !message.guildId) {
-        logger.warn({ msg: 'Message not in useable format'});
+    if (!isValidPlayMessage(message)) {
+        logger.warn({ msg: 'Message not in useable format' });
+        message.reply('Message not in usable format');
         return;
     }
+
+    const url = getDetails(message);
+    await player.addToQueue(url);
 
     logger.info({ msg: 'Joining Voice Channel'});
     const connection = joinVoiceChannel({

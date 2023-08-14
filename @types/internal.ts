@@ -3,4 +3,4 @@ export type Metadata = {
     title: string;
     duration: string;
     author: string;
-}
+};

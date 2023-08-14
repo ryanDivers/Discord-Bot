@@ -1,14 +1,12 @@
-import { joinVoiceChannel } from "@discordjs/voice";
-import { Message } from "discord.js";
-import { Logger } from "pino";
-import { getDetails } from "../../../helpers/inputHelpers";
-import player from "../../../lib/Player";
-import { isValidPlayMessage } from "../../../helpers/validators";
-
+import { joinVoiceChannel } from '@discordjs/voice';
+import { Message } from 'discord.js';
+import { Logger } from 'pino';
+import { getDetails } from '../../../helpers/inputHelpers';
+import player from '../../../lib/Player';
+import { isValidPlayMessage } from '../../../helpers/validators';
 
 const play = async (message: Message, logger: Logger): Promise<void> => {
-    logger.info({ msg: 'Handling Sound Command'});
-
+    logger.info({ msg: 'Handling Sound Command' });
 
     if (!isValidPlayMessage(message)) {
         logger.warn({ msg: 'Message not in useable format' });
@@ -19,19 +17,19 @@ const play = async (message: Message, logger: Logger): Promise<void> => {
     const url = getDetails(message);
     await player.addToQueue(url);
 
-    logger.info({ msg: 'Joining Voice Channel'});
+    logger.info({ msg: 'Joining Voice Channel' });
     const connection = joinVoiceChannel({
         channelId: message.member.voice.channelId || '',
         guildId: message.guildId,
         adapterCreator: message.guild.voiceAdapterCreator,
     });
 
-    logger.info({ msg: 'Subscribing player to Voice Channel'})
+    logger.info({ msg: 'Subscribing player to Voice Channel' });
     const subscription = connection.subscribe(player.returnInstance());
 
     if (subscription) {
-        logger.info({ msg: 'Playing Audio'});
+        logger.info({ msg: 'Playing Audio' });
     }
-}
+};
 
 export { play };

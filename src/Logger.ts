@@ -1,5 +1,5 @@
-import { Message } from "discord.js";
-import { Logger, pino } from "pino";
+import { Message } from 'discord.js';
+import { Logger, pino } from 'pino';
 
 const logger = pino({ base: undefined });
 
@@ -9,6 +9,6 @@ const getEventScopedLogger = (message: Message): Logger => {
         content: message.content,
     });
     return childLogger;
-}
+};
 
 export { logger, getEventScopedLogger };

@@ -1,10 +1,10 @@
-import { Message } from "discord.js";
-import { Logger } from "pino";
+import { Message } from 'discord.js';
+import { Logger } from 'pino';
 
 const ping = (message: Message, logger: Logger): void => {
-    logger.info({ msg: 'Handling Ping command'});
+    logger.info({ msg: 'Handling Ping command' });
     const timeTaken = Date.now() - message.createdTimestamp;
     message.reply(`Pong! This message had a latency of ${timeTaken}ms.`);
-}
+};
 
 export { ping };

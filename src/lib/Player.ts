@@ -89,12 +89,12 @@ class Player {
         if (!this.isPlaying) {
             logger.info({ msg: 'Player is idle' });
         }
-    }
+    };
 
     private errorHandler = (err: unknown) => {
         logger.error({ msg: 'Player Error', err });
         this.recreatePlayer();
-    }
+    };
 }
 
 const player = new Player();

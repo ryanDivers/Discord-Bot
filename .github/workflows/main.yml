@@ -2,7 +2,7 @@ name: Build and Lint
 
 on:
   push:
-  pull_requests:
+  pull_request:
     branches:
       - "*"
 

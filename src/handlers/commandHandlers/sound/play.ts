@@ -14,6 +14,13 @@ const play = async (message: Message, logger: Logger): Promise<void> => {
         return;
     }
 
+    const queue = player.getQueue();
+    if (queue.length >= 20) {
+        logger.warn({ msg: 'Max quesize reached' });
+        message.reply('Play queue at max size');
+        return;
+    }
+
     const url = getDetails(message);
     await player.addToQueue(url);
 

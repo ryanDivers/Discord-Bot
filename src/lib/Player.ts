@@ -49,6 +49,20 @@ class Player {
         }
     }
 
+    async forcePlay(url: string) {
+        logger.info({ msg: 'Force playing song' });
+
+        const metadata = await ytdl.getInfo(url);
+        this.playQueue.unshift({
+            url: metadata.videoDetails.video_url,
+            title: metadata.videoDetails.title,
+            duration: metadata.videoDetails.lengthSeconds,
+            author: metadata.videoDetails.author.name,
+        });
+
+        this.skipSong();
+    }
+
     getQueue() {
         return this.playQueue;
     }

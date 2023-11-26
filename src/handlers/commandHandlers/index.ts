@@ -5,7 +5,7 @@ import { help } from './help';
 import { ping } from './ping';
 import { clearQueue } from './sound/clear';
 import { getQueue } from './sound/getQueue';
-import { play } from './sound/play';
+import { play, forcePlay } from './sound/play';
 import { skipSong } from './sound/skip';
 import { pause, unpause } from './sound/pause';
 import { stop } from './sound/stop';
@@ -15,6 +15,7 @@ const messageEvents: Record<string, (message: Message, logger: Logger) => void |
     'ping': ping,
     'help': help,
     'play': play,
+    'force-play': forcePlay,
     'queue': getQueue,
     'clear': clearQueue,
     'skip': skipSong,

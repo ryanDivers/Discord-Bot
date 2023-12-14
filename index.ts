@@ -5,5 +5,4 @@ import messageHandlers from './src/handlers/messageHandlers';
 
 const client = new Client({ intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildVoiceStates'] });
 client.login(BOT_TOKEN);
-
 client.on(events.newMessage, messageHandlers);

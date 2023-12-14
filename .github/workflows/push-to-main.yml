@@ -27,5 +27,4 @@ jobs:
               with:
                 tag: ${{steps.tag-version.outputs.new_tag}}
                 commit: ${{github.sha}}
-                name: Release ${{ steps.tag-version.outputs.new_tag }}
-                body: ${{ steps.tag-version.outputs.changelog }}
+                name: Release ${{steps.tag-version.outputs.new_tag}}

@@ -20,4 +20,4 @@ const isValidUrl = (message: Message): boolean => {
 // eslint-disable-next-line max-len
 const isValidPlayMessage = (message: Message): message is MessageWithField => isUsableMessage(message) && isValidUrl(message);
 
-export { isValidPlayMessage };
+export { isValidPlayMessage, MessageWithField };

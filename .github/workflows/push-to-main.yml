@@ -2,6 +2,8 @@ name: Merge to Main
 
 on:
     push:
+        branches:
+            - master
 
 jobs:
     create-tag:
@@ -17,5 +19,5 @@ jobs:
             - name: Create Tag
               uses: ncipollo/release-action@v1
               with:
-                tag: ${{steps.package-version.outputs.current_version}}
-                name: Release ${{steps.package-version.outputs.current_version}}
+                tag: ${{steps.package-version.outputs.current-version}}
+                name: Release ${{steps.package-version.outputs.current-version}}

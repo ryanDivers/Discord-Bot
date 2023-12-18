@@ -15,7 +15,7 @@ const ensureValidPlayMessage = (message: Message): MessageWithField => {
 
 const ensureQueueLengthBelowMax = () : void => {
     const queue = player.getQueue();
-    if (queue.length >= 20) {
+    if (queue.length >= 10) {
         throw new ReplyError('Max Queue size reached');
     }
 };

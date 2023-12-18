@@ -4,23 +4,19 @@ import { Logger } from 'pino';
 import { getDetails } from '../../../helpers/inputHelpers';
 import player from '../../../lib/Player';
 import { MessageWithField, isValidPlayMessage } from '../../../helpers/validators';
-import { ReplyError, sendErrorMessage } from '../../../errors';
+import { ReplyError } from '../../../errors';
 
-const ensureValidPlayMessage = (message: Message, logger: Logger): MessageWithField => {
+const ensureValidPlayMessage = (message: Message): MessageWithField => {
     if (!isValidPlayMessage(message)) {
-        const errorMessage = 'Message not in usable format';
-        logger.error({ msg: errorMessage });
-        throw new ReplyError(errorMessage);
+        throw new ReplyError('Message not in usable format');
     }
     return message;
 };
 
-const ensureQueueLengthBelowMax = (logger: Logger) : void => {
+const ensureQueueLengthBelowMax = () : void => {
     const queue = player.getQueue();
     if (queue.length >= 20) {
-        const errorMessage = 'Max Queue size reached';
-        logger.error({ msg: errorMessage });
-        throw new ReplyError(errorMessage);
+        throw new ReplyError('Max Queue size reached');
     }
 };
 
@@ -44,39 +40,29 @@ const subscribeToChannel = (connection: VoiceConnection, logger: Logger): void =
 
 const play = async (message: Message, logger: Logger): Promise<void> => {
     logger.info({ msg: 'Handling Play Command' });
-    try {
-        // TS does not recognise nested type predicate, needs a relook
-        const messageWithField = ensureValidPlayMessage(message, logger);
-        ensureQueueLengthBelowMax(logger);
+    // TS does not recognise nested type predicate, needs a relook
+    const messageWithField = ensureValidPlayMessage(message);
+    ensureQueueLengthBelowMax();
 
-        const url = getDetails(messageWithField);
-        await player.addToQueue(url);
+    const url = getDetails(messageWithField);
+    await player.addToQueue(url);
 
-        const voiceConnection = joinChannel(messageWithField, logger);
-        subscribeToChannel(voiceConnection, logger);
-    } catch (err) {
-        sendErrorMessage(message, err);
-        logger.error({ msg: 'Error handling Play command', error: err });
-    }
+    const voiceConnection = joinChannel(messageWithField, logger);
+    subscribeToChannel(voiceConnection, logger);
 };
 
 const forcePlay = async (message: Message, logger: Logger): Promise<void> => {
     logger.info({ msg: 'Handling Force Play Command' });
 
-    try {
-        // TS does not recognise nested type predicate, needs a relook
-        const messageWithField = ensureValidPlayMessage(message, logger);
-        ensureQueueLengthBelowMax(logger);
+    // TS does not recognise nested type predicate, needs a relook
+    const messageWithField = ensureValidPlayMessage(message);
+    ensureQueueLengthBelowMax();
 
-        const url = getDetails(messageWithField);
-        await player.forcePlay(url);
+    const url = getDetails(messageWithField);
+    await player.forcePlay(url);
 
-        const voiceConnection = joinChannel(messageWithField, logger);
-        subscribeToChannel(voiceConnection, logger);
-    } catch (err) {
-        sendErrorMessage(message, err);
-        logger.error({ msg: 'Error handling Force Play command', error: err });
-    }
+    const voiceConnection = joinChannel(messageWithField, logger);
+    subscribeToChannel(voiceConnection, logger);
 };
 
 export { play, forcePlay };

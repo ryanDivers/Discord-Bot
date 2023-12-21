@@ -12,6 +12,7 @@ import ytdl from 'ytdl-core';
 import { InternalDiscordGatewayAdapterCreator } from 'discord.js';
 import { logger } from '../Logger';
 import { Metadata } from '../../@types/internal';
+import { VoiceChannelConfigNotSetError } from '../errors';
 
 class Player {
     private isPlaying: boolean = false;
@@ -85,7 +86,7 @@ class Player {
         if (this.voiceChannelConfig) {
             return joinVoiceChannel(this.voiceChannelConfig);
         }
-        throw Error('This should not be happening');
+        throw new VoiceChannelConfigNotSetError();
     }
 
     subscribeToChannel(): void {

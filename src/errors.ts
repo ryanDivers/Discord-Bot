@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 class ReplyError extends Error {
     public replyMessage: string;
 
@@ -8,6 +9,16 @@ class ReplyError extends Error {
     }
 }
 
+class VoiceChannelConfigNotSetError extends Error {
+    constructor() {
+        const message = 'VoiceChannelConfig Undefined';
+        super(message);
+        this.message = message;
+        this.name = 'VoiceChannelConfigNotSetError';
+    }
+}
+
 export {
     ReplyError,
+    VoiceChannelConfigNotSetError,
 };

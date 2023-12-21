@@ -13,13 +13,10 @@ class Player {
 
     private playQueue: Metadata[] = [];
 
-    private player: AudioPlayer;
+    private player!: AudioPlayer;
 
     constructor() {
-        this.player = createAudioPlayer();
-        logger.info({ msg: 'Creating Audio Player' });
-        this.player.on('error', this.errorHandler);
-        this.player.on(AudioPlayerStatus.Idle, this.idleHandler);
+        this.createPlayer();
     }
 
     private play() {
@@ -92,8 +89,15 @@ class Player {
         this.player.stop();
     }
 
-    private recreatePlayer() {
+    private createPlayer() {
         this.player = createAudioPlayer();
+        logger.info({ msg: 'Creating Audio Player' });
+        this.player.on('error', this.errorHandler);
+        this.player.on(AudioPlayerStatus.Idle, this.idleHandler);
+    }
+
+    private recreatePlayer() {
+        this.createPlayer();
         this.play();
     }
 

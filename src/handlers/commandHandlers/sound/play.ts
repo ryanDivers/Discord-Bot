@@ -1,4 +1,3 @@
-import { VoiceConnection, joinVoiceChannel } from '@discordjs/voice';
 import { Message } from 'discord.js';
 import { Logger } from 'pino';
 import { getDetails } from '../../../helpers/inputHelpers';
@@ -20,22 +19,12 @@ const ensureQueueLengthBelowMax = () : void => {
     }
 };
 
-const joinChannel = (message: MessageWithField, logger: Logger): VoiceConnection => {
-    logger.info({ msg: 'Joining Voice Channel' });
-    return joinVoiceChannel({
-        channelId: message.member.voice.channelId || '',
-        guildId: message.guildId,
-        adapterCreator: message.guild.voiceAdapterCreator,
-    });
-};
-
-const subscribeToChannel = (connection: VoiceConnection, logger: Logger): void => {
-    logger.info({ msg: 'Subscribing player to Voice Channel' });
-    const subscription = connection.subscribe(player.returnInstance());
-
-    if (subscription) {
-        logger.info({ msg: 'Connection Subscribed' });
-    }
+const setPlayerChannelConfig = (message: MessageWithField): void => {
+    player.setChannelConfig(
+        message.member.voice.channelId || '',
+        message.guildId,
+        message.guild.voiceAdapterCreator,
+    );
 };
 
 const play = async (message: Message, logger: Logger): Promise<void> => {
@@ -44,11 +33,9 @@ const play = async (message: Message, logger: Logger): Promise<void> => {
     const messageWithField = ensureValidPlayMessage(message);
     ensureQueueLengthBelowMax();
 
+    setPlayerChannelConfig(messageWithField);
     const url = getDetails(messageWithField);
     await player.addToQueue(url);
-
-    const voiceConnection = joinChannel(messageWithField, logger);
-    subscribeToChannel(voiceConnection, logger);
 };
 
 const forcePlay = async (message: Message, logger: Logger): Promise<void> => {
@@ -58,11 +45,9 @@ const forcePlay = async (message: Message, logger: Logger): Promise<void> => {
     const messageWithField = ensureValidPlayMessage(message);
     ensureQueueLengthBelowMax();
 
+    setPlayerChannelConfig(messageWithField);
     const url = getDetails(messageWithField);
     await player.forcePlay(url);
-
-    const voiceConnection = joinChannel(messageWithField, logger);
-    subscribeToChannel(voiceConnection, logger);
 };
 
 export { play, forcePlay };

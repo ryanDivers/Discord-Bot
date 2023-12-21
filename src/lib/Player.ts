@@ -1,10 +1,15 @@
 import {
     AudioPlayer,
     AudioPlayerStatus,
+    CreateVoiceConnectionOptions,
+    JoinVoiceChannelOptions,
+    VoiceConnection,
     createAudioPlayer,
     createAudioResource,
+    joinVoiceChannel,
 } from '@discordjs/voice';
 import ytdl from 'ytdl-core';
+import { InternalDiscordGatewayAdapterCreator } from 'discord.js';
 import { logger } from '../Logger';
 import { Metadata } from '../../@types/internal';
 
@@ -13,13 +18,13 @@ class Player {
 
     private playQueue: Metadata[] = [];
 
-    private player: AudioPlayer;
+    private player!: AudioPlayer;
+
+    // eslint-disable-next-line max-len
+    private voiceChannelConfig: (CreateVoiceConnectionOptions & JoinVoiceChannelOptions) | undefined;
 
     constructor() {
-        this.player = createAudioPlayer();
-        logger.info({ msg: 'Creating Audio Player' });
-        this.player.on('error', this.errorHandler);
-        this.player.on(AudioPlayerStatus.Idle, this.idleHandler);
+        this.createPlayer();
     }
 
     private play() {
@@ -27,6 +32,7 @@ class Player {
         if (metadata) {
             logger.info({ msg: 'Playing next song in queue' });
             const stream = ytdl(metadata.url, { filter: 'audioonly' });
+            this.subscribeToChannel();
             const resource = createAudioResource(stream);
             this.player.play(resource);
             this.isPlaying = true;
@@ -63,6 +69,32 @@ class Player {
         this.skipSong();
     }
 
+    setChannelConfig(
+        channelId: string,
+        guildId: string,
+        adapterCreator: InternalDiscordGatewayAdapterCreator,
+    ): void {
+        this.voiceChannelConfig = {
+            channelId,
+            guildId,
+            adapterCreator,
+        };
+    }
+
+    private joinChannel(): VoiceConnection {
+        if (this.voiceChannelConfig) {
+            return joinVoiceChannel(this.voiceChannelConfig);
+        }
+        throw Error('This should not be happening');
+    }
+
+    subscribeToChannel(): void {
+        logger.info({ msg: 'Joining Voice Channel' });
+        const connection = this.joinChannel();
+        logger.info({ msg: 'Subscribing Player to Voice Connection' });
+        connection.subscribe(this.player);
+    }
+
     getQueue() {
         return this.playQueue;
     }
@@ -92,8 +124,15 @@ class Player {
         this.player.stop();
     }
 
-    private recreatePlayer() {
+    private createPlayer() {
         this.player = createAudioPlayer();
+        logger.info({ msg: 'Creating Audio Player' });
+        this.player.on('error', this.errorHandler);
+        this.player.on(AudioPlayerStatus.Idle, this.idleHandler);
+    }
+
+    private recreatePlayer() {
+        this.createPlayer();
         this.play();
     }
 

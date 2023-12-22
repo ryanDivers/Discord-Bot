@@ -33,7 +33,6 @@ class Player {
         if (metadata) {
             logger.info({ msg: 'Playing next song in queue' });
             const stream = ytdl(metadata.url, { filter: 'audioonly' });
-            this.subscribeToChannel();
             const resource = createAudioResource(stream);
             this.player.play(resource);
             this.isPlaying = true;
@@ -44,6 +43,7 @@ class Player {
         logger.info({ msg: 'Adding new song to queue' });
 
         const metadata = await ytdl.getInfo(url);
+        this.subscribeToChannel();
         this.playQueue.push({
             url: metadata.videoDetails.video_url,
             title: metadata.videoDetails.title,
@@ -60,6 +60,7 @@ class Player {
         logger.info({ msg: 'Force playing song' });
 
         const metadata = await ytdl.getInfo(url);
+        this.subscribeToChannel();
         this.playQueue.unshift({
             url: metadata.videoDetails.video_url,
             title: metadata.videoDetails.title,
@@ -110,6 +111,7 @@ class Player {
 
     skipSong() {
         this.player.stop();
+        this.subscribeToChannel();
         this.play();
     }
 
@@ -134,6 +136,7 @@ class Player {
 
     private recreatePlayer() {
         this.createPlayer();
+        this.subscribeToChannel();
         this.play();
     }
 
